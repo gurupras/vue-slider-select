@@ -11,7 +11,7 @@
         :min="0"
         :max="options.length -1"
         steps="1"
-        v-model="rangeValue"
+        v-model="rVal"
         :style="rangeStyle"
         ref="range">
   </div>
@@ -21,7 +21,8 @@
         :key="getKey(option)"
         :class="getClass(idx)"
         :style="getLabelStyle(idx)"
-        @click="rangeValue = idx"
+        :disabled="option.disabled"
+        @click="rVal = idx"
         ref="labels">
       {{ getLabel(option) }}
     </li>
@@ -45,11 +46,16 @@ export default {
     defaultValue () {
       const defaultVal = this.options.findIndex(x => x.default)
       return Math.max(defaultVal, 0)
+    },
+    rangeValue () {
+      return Number(this.rVal)
     }
   },
   watch: {
-    rangeValue (v) {
-      this.selected = this.options[v]
+    rangeValue (v, o) {
+      if (this.options[v].disabled) {
+        this.rVal = `${o}`
+      }
     },
     selected (v) {
       this.$emit('input', v)
@@ -58,8 +64,10 @@ export default {
   data () {
     return {
       selected: undefined,
-      rangeValue: 0,
-      rangeStyle: {}
+      rVal: 0,
+      rangeStyle: {},
+      eventID: undefined,
+      startValue: undefined
     }
   },
   methods: {
@@ -93,7 +101,7 @@ export default {
     }
   },
   beforeMount () {
-    this.rangeValue = this.defaultValue
+    this.rVal = this.defaultValue
   }
 }
 </script>
@@ -112,7 +120,7 @@ export default {
 @mixin rangeTrack {
   width: 100%;
   height: 2px;
-  cursor: pointer;
+  cursor: default;
   background: var(--track-color, #b2b2b2);
 }
 
@@ -131,7 +139,7 @@ export default {
 
   // Thumb
   &::-webkit-slider-thumb {
-    -webkit-appearance: none; // needed again for Chrome & Safari
+    -webkit-appearance: none;
     @include rangeThumb;
   }
 
@@ -161,7 +169,7 @@ export default {
     outline: none;
   }
 
-  &::-ms-track { // A little somethin' somethin' for IE
+  &::-ms-track {
     width: 100%;
     cursor: pointer;
     background: transparent;
@@ -174,7 +182,7 @@ export default {
 .range-labels {
   position: relative;
   width: 100%;
-  margin: 18px 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 
@@ -186,6 +194,8 @@ export default {
     font-size: 16px;
     cursor: pointer;
     left: var(--position);
+    margin-top: 4.5px;
+    padding: 13.5px 0 0 0;
 
     &:first-child {
       &::before {
@@ -205,7 +215,7 @@ export default {
 
     &::before {
       position: absolute;
-      top: -25px;
+      top: calc(-25px + 13.5px);
       right: 0;
       left: 0;
       margin: 0;
@@ -214,7 +224,16 @@ export default {
       height: var(--marker-radius, 9px);
       background: var(--label-color, #b2b2b2);
       border-radius: 50%;
+      cursor: pointer;
     }
+
+    &[disabled] {
+      pointer-events: none;
+    }
+  }
+
+  *[disabled] & {
+    pointer-events: none;
   }
 
   .active {

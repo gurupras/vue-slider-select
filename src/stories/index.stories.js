@@ -21,7 +21,10 @@ export const withText = () => ({
         {
           label: 'Two'
         },
-        'Three',
+        {
+          label: 'Three',
+          disabled: true
+        },
         'Four'
         // 'Five',
         // 'Six',
