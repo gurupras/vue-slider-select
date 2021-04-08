@@ -1,18 +1,23 @@
 {
-  "name": "slider-select",
+  "name": "@gurupras/vue-slider-select",
   "version": "0.1.0",
-  "private": true,
+  "main": "./dist/slider-select.umd.min.js",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --target lib --name slider-select ./src/components/slider-select.vue",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "storybook:build": "vue-cli-service storybook:build -c config/storybook",
+    "storybook:serve": "vue-cli-service storybook:serve -p 6006 -c config/storybook"
   },
   "dependencies": {
     "core-js": "^3.6.5",
     "vue": "^2.6.11"
   },
   "devDependencies": {
+    "@storybook/addon-essentials": "^6.2.5",
+    "@storybook/addon-links": "^6.2.5",
+    "@storybook/vue": "^6.2.5",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-plugin-unit-jest": "~4.5.0",
@@ -28,6 +33,13 @@
     "eslint-plugin-vue": "^6.2.2",
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
+    "vue-cli-plugin-storybook": "^2.0.0",
     "vue-template-compiler": "^2.6.11"
-  }
+  },
+  "files": [
+    "dist/*",
+    "src/*",
+    "*.json",
+    "*.js"
+  ]
 }
