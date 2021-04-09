@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="slider-root">
   <select style="display: none;">
     <option v-for="option in options"
         :key="getKey(option)"
@@ -14,6 +14,13 @@
         v-model="rVal"
         :style="rangeStyle"
         ref="range">
+    <div v-for="(option, idx) in options" :key="idx"
+        class="marker"
+        :class="getClass(idx)"
+        :style="getLabelStyle(idx)"
+        :disabled="option.disabled"
+        @click="rVal = idx">
+    </div>
   </div>
 
   <ul class="range-labels">
@@ -102,151 +109,153 @@ export default {
   },
   beforeMount () {
     this.rVal = this.defaultValue
+  },
+  mounted () {
+    this.$forceUpdate()
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@mixin rangeThumb {
-  width: 18px;
-  height: 18px;
-  margin: -9px 0;
-  border-radius: 50%;
-  background: var(--active-color, #37adbf);
-  cursor: pointer;
-  border: 0 !important;
-}
+.slider-root {
+  --slider-height: 5px;
+  --marker-radius: 9px;
+  --thumb-radius: 18px;
+  --label-color: #b2b2b2;
+  --track-color: var(--label-color);
+  --active-color: #37adbf;
+  $half-marker-radius: calc(var(--marker-radius, 9px) / 2);
+  $half-slider-height: calc(var(--slider-height) / 2);
+  $half-thumb-radius: calc(var(--thumb-radius) / 2);
 
-@mixin rangeTrack {
-  width: 100%;
-  height: 2px;
-  cursor: default;
-  background: var(--track-color, #b2b2b2);
-}
-
-.range {
-  position: relative;
-  width: 100%;
-  height: 5px;
-}
-
-.range input {
-  width: 100%;
-  position: absolute;
-  top: 0px;
-  height: 0;
-  -webkit-appearance: none;
-
-  // Thumb
-  &::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    @include rangeThumb;
+  @mixin rangeThumb {
+    width: var(--thumb-radius);
+    height: var(--thumb-radius);
+    margin: calc(-1 * #{$half-thumb-radius}) 0;
+    border-radius: 50%;
+    background: var(--active-color);
+    cursor: pointer;
+    border: 0 !important;
   }
 
-  &::-moz-range-thumb {
-    @include rangeThumb;
-  }
-
-  &::-ms-thumb {
-    @include rangeThumb;
-  }
-
-  // Track
-  &::-webkit-slider-runnable-track {
-    @include rangeTrack;
-  }
-
-  &::-moz-range-track {
-    @include rangeTrack;
-  }
-
-  &::-ms-track {
-    @include rangeTrack;
-  }
-
-  &:focus { // override outline/background on focus
-    background: none;
-    outline: none;
-  }
-
-  &::-ms-track {
+  @mixin rangeTrack {
     width: 100%;
-    cursor: pointer;
-    background: transparent;
-    border-color: transparent;
-    color: transparent;
+    height: 2px;
+    cursor: default;
+    background: var(--track-color);
   }
-}
 
-// Labels below slider
-.range-labels {
-  position: relative;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  .range {
+    position: relative;
+    width: 100%;
+    height: var(--slider-height);
+    z-index: 1;
 
-  li {
-    position: absolute;
-    float: left;
-    text-align: center;
-    color: var(--label-color, #b2b2b2);
-    font-size: 16px;
-    cursor: pointer;
-    left: var(--position);
-    margin-top: 4.5px;
-    padding: 13.5px 0 0 0;
-
-    &:first-child {
-      &::before {
-      }
-    }
-    &:not(:first-child) {
-      transform: translateX(-10px);
-      &::before {
-        left: -4.5px;
-        transform: translateX(10px);
-      }
-    }
-
-    &:last-child {
-      right: 0;
-    }
-
-    &::before {
+    input {
+      width: 100%;
       position: absolute;
-      top: calc(-25px + 13.5px);
-      right: 0;
-      left: 0;
-      margin: 0;
-      content: "";
-      width: var(--marker-radius, 9px);
-      height: var(--marker-radius, 9px);
-      background: var(--label-color, #b2b2b2);
+      top: 0px;
+      height: 0;
+      -webkit-appearance: none;
+
+      // Thumb
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        @include rangeThumb;
+      }
+
+      &::-moz-range-thumb {
+        @include rangeThumb;
+      }
+
+      &::-ms-thumb {
+        @include rangeThumb;
+      }
+
+      // Track
+      &::-webkit-slider-runnable-track {
+        @include rangeTrack;
+      }
+
+      &::-moz-range-track {
+        @include rangeTrack;
+      }
+
+      &::-ms-track {
+        @include rangeTrack;
+      }
+
+      &:focus { // override outline/background on focus
+        background: none;
+        outline: none;
+      }
+
+      &::-ms-track {
+        width: 100%;
+        cursor: pointer;
+        background: transparent;
+        border-color: transparent;
+        color: transparent;
+      }
+    }
+
+    .marker {
+      position: absolute;
+      width: var(--marker-radius);
+      height: var(--marker-radius);
+      margin-top: calc(-1 * #{$half-slider-height});
+      background: var(--label-color);
       border-radius: 50%;
       cursor: pointer;
+
+      left: calc(var(--position));
+
+      &:last-of-type {
+        left: calc(var(--position) - #{$half-marker-radius});
+      }
+
+      &[disabled] {
+        pointer-events: none;
+      }
+
+      &.active.selected {
+        display: none;
+        background: none;
+      }
+    }
+  }
+
+  // Labels below slider
+  .range-labels {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    flex-basis: 0px;
+    justify-content: space-between;
+    margin-top: $half-marker-radius;
+
+    li {
+      position: relative;
+      text-align: center;
+      color: var(--label-color);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 12px 0 0 0;
+      display: flex;
     }
 
-    &[disabled] {
+    *[disabled] & {
       pointer-events: none;
     }
-  }
 
-  *[disabled] & {
-    pointer-events: none;
-  }
-
-  .active {
-    color: var(--active-color, #37adbf);
-  }
-
-  .selected::before {
-    background: var(--active-color, #37adbf);
-  }
-
-  .active.selected::before {
-    display: none;
-    background: none;
+    .active {
+      color: var(--active-color);
+    }
   }
 }
 </style>
