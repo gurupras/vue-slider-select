@@ -14,25 +14,31 @@
         v-model="rVal"
         :style="rangeStyle"
         ref="range">
-    <div v-for="(option, idx) in options" :key="idx"
-        class="marker"
-        :class="getClass(idx)"
-        :style="getLabelStyle(idx)"
-        :disabled="option.disabled"
-        @click="rVal = idx">
-    </div>
+    <slot name="markers">
+      <div v-for="(option, idx) in options" :key="idx"
+          class="marker"
+          :class="getClass(idx)"
+          :style="getLabelStyle(idx)"
+          :disabled="option.disabled"
+          @click="rVal = idx"/>
+    </slot>
   </div>
 
   <ul class="range-labels">
-    <li v-for="(option, idx) in options"
-        :key="getKey(option)"
-        :class="getClass(idx)"
-        :style="getLabelStyle(idx)"
-        :disabled="option.disabled"
-        @click="rVal = idx"
-        ref="labels">
-      {{ getLabel(option) }}
-    </li>
+    <slot name="labels">
+      <li v-for="(option, idx) in options"
+          :key="getKey(option)"
+          :class="getClass(idx)"
+          :style="getLabelStyle(idx)"
+          :disabled="option.disabled"
+          @click="rVal = idx"
+          ref="labels">
+        <slot :name="`label-${getKey(option)}`" :get-label="getLabel" :option="option" :index="idx">
+          {{ getLabel(option) }}
+        </slot>
+      </li>
+
+    </slot>
   </ul>
 </div>
 </template>

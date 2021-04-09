@@ -11,7 +11,11 @@ export const withText = () => ({
   components: { SliderSelect },
   template: `
   <div style="margin: auto; width: 50%">
-    <SliderSelect :options="options"/>
+    <SliderSelect :options="options">
+      <template #label-Three="props">
+        <span style="color: red">{{ props.getLabel(props.option) }}</span>
+      </template>
+    </SliderSelect>
   </div>
   `,
   data () {
