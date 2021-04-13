@@ -68,7 +68,9 @@ export default {
     rangeValue (v, o) {
       if (this.options[v].disabled) {
         this.rVal = `${o}`
+        return
       }
+      this.selected = this.getValue(this.options[v])
     },
     selected (v) {
       this.$emit('input', v)
