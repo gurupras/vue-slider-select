@@ -53,10 +53,26 @@ export default {
       default () {
         return []
       }
+    },
+    value: {
+      type: [Object, String],
+      default () {
+        return undefined
+      }
     }
   },
   computed: {
-    defaultValue () {
+    defaultIndex () {
+      const { value = '' } = this
+      if (value) {
+        const valueKey = this.getKey(value)
+        const valueLabel = this.getLabel(value)
+        const valueValue = this.getValue(value)
+        const valueIdx = this.options.findIndex(x => x === value || this.getKey(x) === valueKey || this.getValue(x) === valueValue || this.getLabel(x) === valueLabel)
+        if (valueIdx >= 0) {
+          return valueIdx
+        }
+      }
       const defaultVal = this.options.findIndex(x => x.default)
       return Math.max(defaultVal, 0)
     },
@@ -81,8 +97,7 @@ export default {
       selected: undefined,
       rVal: 0,
       rangeStyle: {},
-      eventID: undefined,
-      startValue: undefined
+      eventID: undefined
     }
   },
   methods: {
@@ -116,7 +131,7 @@ export default {
     }
   },
   beforeMount () {
-    this.rVal = this.defaultValue
+    this.rVal = this.defaultIndex
   },
   mounted () {
     this.$forceUpdate()
