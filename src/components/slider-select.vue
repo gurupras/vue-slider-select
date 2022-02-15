@@ -65,12 +65,9 @@ export default {
     defaultIndex () {
       const { value = '' } = this
       if (value) {
-        const valueKey = this.getKey(value)
-        const valueLabel = this.getLabel(value)
-        const valueValue = this.getValue(value)
-        const valueIdx = this.options.findIndex(x => x === value || this.getKey(x) === valueKey || this.getValue(x) === valueValue || this.getLabel(x) === valueLabel)
-        if (valueIdx >= 0) {
-          return valueIdx
+        const idx = this.getIndex(value)
+        if (idx >= 0) {
+          return idx
         }
       }
       const defaultVal = this.options.findIndex(x => x.default)
@@ -81,6 +78,11 @@ export default {
     }
   },
   watch: {
+    value (v) {
+      const idx = this.getIndex(v)
+      this.selected = this.getValue(this.options[idx])
+      this.rVal = idx
+    },
     rangeValue (v, o) {
       if (this.options[v].disabled) {
         this.rVal = `${o}`
@@ -109,6 +111,16 @@ export default {
     },
     getValue (option) {
       return option.value || this.getLabel(option)
+    },
+    getIndex (value) {
+      const valueKey = this.getKey(value)
+      const valueLabel = this.getLabel(value)
+      const valueValue = this.getValue(value)
+      const valueIdx = this.options.findIndex(x => x === value || this.getKey(x) === valueKey || this.getValue(x) === valueValue || this.getLabel(x) === valueLabel)
+      if (valueIdx >= 0) {
+        return valueIdx
+      }
+      return -1
     },
     getClass (idx) {
       if (idx === Number(this.rangeValue)) {

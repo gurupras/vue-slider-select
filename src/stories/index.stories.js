@@ -11,7 +11,7 @@ export const withText = () => ({
   components: { SliderSelect },
   template: `
   <div style="margin: auto; width: 50%">
-    <SliderSelect :options="options" v-model="value">
+    <SliderSelect :options="options" v-model="value" ref="slider">
       <template #label-Three="props">
         <span style="color: red">{{ props.getLabel(props.option) }}</span>
       </template>
@@ -36,5 +36,9 @@ export const withText = () => ({
       ],
       value: 'Four'
     }
+  },
+  mounted () {
+    window.app = this
+    window.slider = this.$refs.slider
   }
 })
